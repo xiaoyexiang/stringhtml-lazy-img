@@ -8,8 +8,8 @@ module.exports = {
     output: {
         publicPath: __dirname + '/dist/', 
         path: path.resolve(__dirname, 'dist'),
-        filename: 'stringhtml-lazyload.[hash:8].js'
-        // filename: 'stringhtml-lazyload.js'
+        // filename: 'stringhtml-lazyload.[hash:8].js'
+        filename: 'stringhtml-lazyload.js'
     },
     module: {
         rules: [{
