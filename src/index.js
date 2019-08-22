@@ -61,7 +61,7 @@
                 WINDOW_HEIGHT: window.innerHeight,
                 isYojiangApp: false,
                 imgBigCheck: true,
-                aliossUrlPrefix: '',
+                ossUrlPrefix: '',
                 qiniuUrlPrefix: '',
                 tencentUrlPrefix: '',
             };
@@ -162,18 +162,26 @@
                         return;
                     }
 
-                    let lazySrc = elem.getAttribute('lazy-src');
+                    const oriLazySrc = elem.getAttribute('lazy-src');
                     getData(elem, 'loading', 1);
 
                     // 压缩图片的操作
                     const resizeWidth = elem.clientWidth || this.defOpts.articleWidth;
-                    lazySrc = this.resizeUrl(lazySrc, resizeWidth);
+                    const lazySrc = this.resizeUrl(oriLazySrc, resizeWidth);
                     console.log('updateImages: ', lazySrc);
 
                     const imageObj = new Image();
                     imageObj.src = lazySrc;
                     imageObj.onload = () => {
                         elem.setAttribute('src', lazySrc);
+                        elem.onload = function(){
+                            elem.removeAttribute('lazy-src');
+                            elem.removeAttribute('data-loading');
+                            elem.removeAttribute('class');
+                        };
+                    }
+                    imageObj.onerror = () => {
+                        elem.setAttribute('src', oriLazySrc);
                         elem.onload = function(){
                             elem.removeAttribute('lazy-src');
                             elem.removeAttribute('data-loading');
@@ -256,7 +264,7 @@
         },
         resizeUrl: function(url, resizeWidth) {
             if (this.defOpts.urlResizeType === 'oss' ||
-                (this.defOpts.aliossUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.aliossUrlPrefix) > -1)) {
+                (this.defOpts.ossUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.ossUrlPrefix) > -1)) {
                 return url + '?x-oss-process=image/resize,w_' + resizeWidth;
             } else if (this.defOpts.urlResizeType === 'qiniu' ||
                 (this.defOpts.qiniuUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.qiniuUrlPrefix) > -1)) {

@@ -1,5 +1,7 @@
+const webpack = require('webpack')
 const path = require('path')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -20,7 +22,23 @@ module.exports = {
             }
         }]
     },
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 9000,
+        historyApiFallback: {
+            // HTML5 history模式
+            rewrites: [{ from: /.*/, to: '/index.html' }]
+        }
+    },
     plugins: [
-        new CleanWebpackPlugin(), // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
-    ],
+        // new CleanWebpackPlugin(), // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
+        new HtmlWebpackPlugin({
+            title: 'StringHtml lazyImg',
+            filename: 'index.html',
+            template: 'index.html',
+        }),
+        new webpack.HotModuleReplacementPlugin(), // 热部署模块
+        new webpack.NamedModulesPlugin(),
+    ]
 }
