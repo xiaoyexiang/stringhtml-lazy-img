@@ -1,7 +1,9 @@
 const webpack = require('webpack')
 const path = require('path')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+console.log('process.env.NODE_ENV: ', process.env.NODE_ENV);
 
 module.exports = {
     entry: {
@@ -10,8 +12,7 @@ module.exports = {
     output: {
         publicPath: __dirname + '/dist/', 
         path: path.resolve(__dirname, 'dist'),
-        // filename: 'stringhtml-lazyload.[hash:8].js'
-        filename: 'stringhtml-lazyload.js'
+        filename: process.env.NODE_ENV === 'production' ? 'stringhtml-lazyload.[hash:8].js' : 'stringhtml-lazyload.js',
     },
     module: {
         rules: [{
@@ -32,13 +33,13 @@ module.exports = {
         }
     },
     plugins: [
-        // new CleanWebpackPlugin(), // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
-        new HtmlWebpackPlugin({
-            title: 'StringHtml lazyImg',
-            filename: 'index.html',
-            template: 'index.html',
-        }),
-        new webpack.HotModuleReplacementPlugin(), // 热部署模块
-        new webpack.NamedModulesPlugin(),
+        new CleanWebpackPlugin(), // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
+        // new HtmlWebpackPlugin({
+        //     title: 'StringHtml lazyImg',
+        //     filename: 'index.html',
+        //     template: 'index.html',
+        // }),
+        // new webpack.HotModuleReplacementPlugin(), // 热部署模块
+        // new webpack.NamedModulesPlugin(),
     ]
 }

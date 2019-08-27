@@ -1,7 +1,9 @@
-(function() {
+;(function(undefined) {
     'use strict';
+    var _global;
+
     var yojiangAppCurY = 0;
-    window.android.consoleLog('yojiangAppCurY: ' + yojiangAppCurY);
+    // window.android.consoleLog('yojiangAppCurY: ' + yojiangAppCurY);
 
     // 对象合并
     function extend(o, n, override) {
@@ -43,13 +45,11 @@
         return navigator.userAgent.indexOf('Android') > -1;
     }
 
-    function strHtmlLazyload(element, strHtml, options) {
+    function StrHtmlLazyload(element, strHtml, options) {
         this.init(element, strHtml, options);
     }
 
-    strHtmlLazyload.prototype = {
-        getHttp: getHttp,
-        stripProtocol: stripProtocol,
+    StrHtmlLazyload.prototype = {
 
         init: function(element, strHtml, options) {
 
@@ -60,12 +60,16 @@
                 articleWidth: window.innerWidth - 24 * 2,
                 WINDOW_HEIGHT: window.innerHeight,
                 isYojiangApp: false,
+                devicePixelRatio: window.devicePixelRatio || 1,
                 imgBigCheck: true,
-                aliossUrlPrefix: '',
+                ossUrlPrefix: '',
                 qiniuUrlPrefix: '',
                 tencentUrlPrefix: '',
             };
             this.defOpts = extend(defOpts, options, true);
+            if(options.isYojiangApp) {
+                this.defOpts.defaultLazyPic = 'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==';   
+            }
             this.element = element;
             this.finished = true;
             this.imageSizes = [];
@@ -76,7 +80,7 @@
 
             // window.android.consoleLog('oldstrHtml: ' + strHtml);
             strHtml = this._processHtml(strHtml);
-            window.android.consoleLog('newstrHtml: ' + strHtml);
+            // window.android.consoleLog('newstrHtml: ' + strHtml);
 
             var _this = this;
             this.show(element, strHtml, function() {
@@ -121,7 +125,7 @@
                     const aWidth = Math.min(realWidth, this.defOpts.articleWidth);
                     const aHeight = Math.floor(realHeight * aWidth / realWidth);
 
-                    match = match.replace(/\sheight=/, ` style="width: ${aWidth}px; height: ${aHeight}px; object-fit: cover;" height=`);
+                    match = match.replace(/\sheight=/, ` style="width: ${aWidth}px; height: ${aHeight}px; object-fit: cover;" class="img-loading" height=`);
                     match = match.replace(/\ssrc=/, ` src="${this.defOpts.defaultLazyPic}" data-index="${this.imagesIndex}" lazy-src=`);
                     this.imagesIndex++;
                     return match;
@@ -135,8 +139,8 @@
         },
         show: function(element, strHtml, callback) {
             element.innerHTML = strHtml;
-            console.log('show: start');
-            window.android.consoleLog('show: start');
+            // console.log('show: start');
+            // window.android.consoleLog('show: start');
 
             callback && callback();
         },
@@ -159,20 +163,32 @@
                         return;
                     }
 
-                    let lazySrc = elem.getAttribute('lazy-src');
+                    const oriLazySrc = elem.getAttribute('lazy-src');
                     getData(elem, 'loading', 1);
 
                     // 压缩图片的操作
                     const resizeWidth = elem.clientWidth || this.defOpts.articleWidth;
-                    lazySrc = this.resizeUrl(lazySrc, resizeWidth);
+                    const lazySrc = this.resizeUrl(oriLazySrc, resizeWidth);
                     console.log('updateImages: ', lazySrc);
 
-                    elem.setAttribute('src', lazySrc);
-                    elem.onload = function(){
-                        elem.removeAttribute('lazy-src');
-                        elem.removeAttribute('data-loading');
-                        elem.removeAttribute('class');
-                    };
+                    const imageObj = new Image();
+                    imageObj.src = lazySrc;
+                    imageObj.onload = () => {
+                        elem.setAttribute('src', lazySrc);
+                        elem.onload = function(){
+                            elem.removeAttribute('lazy-src');
+                            elem.removeAttribute('data-loading');
+                            elem.removeAttribute('class');
+                        };
+                    }
+                    imageObj.onerror = () => {
+                        elem.setAttribute('src', oriLazySrc);
+                        elem.onload = function(){
+                            elem.removeAttribute('lazy-src');
+                            elem.removeAttribute('data-loading');
+                            elem.removeAttribute('class');
+                        };
+                    }
                 }
             });
 
@@ -249,14 +265,14 @@
         },
         resizeUrl: function(url, resizeWidth) {
             if (this.defOpts.urlResizeType === 'oss' ||
-                (this.defOpts.aliossUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.aliossUrlPrefix) > -1)) {
-                return url + '?x-oss-process=image/resize,w_' + resizeWidth;
+                (this.defOpts.ossUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.ossUrlPrefix) > -1)) {
+                return url + '?x-oss-process=image/resize,w_' + resizeWidth * this.defOpts.devicePixelRatio;
             } else if (this.defOpts.urlResizeType === 'qiniu' ||
                 (this.defOpts.qiniuUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.qiniuUrlPrefix) > -1)) {
-                return url + '?imageView2/2/w/' + resizeWidth;
+                return url + '?imageView2/2/w/' + resizeWidth * this.defOpts.devicePixelRatio;
             } else if (this.defOpts.urlResizeType === 'tencent' ||
                 (this.defOpts.tencentUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.tencentUrlPrefix) > -1)) {
-                return url + '?imageView2/2/w/' + resizeWidth;
+                return url + '?imageView2/2/w/' + resizeWidth * this.defOpts.devicePixelRatio;
             } else {
                 return url
             }
@@ -264,8 +280,17 @@
     };
 
     // 最后将插件对象暴露给全局对象
-    window.strHtmlLazyload = strHtmlLazyload;
-})()
+    _global = (function(){ return this || (0, eval)('this'); }());
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = StrHtmlLazyload;
+    } else if (typeof define === "function" && define.amd) {
+        define(function(){return StrHtmlLazyload;});
+    } else {
+        !('StrHtmlLazyload' in _global) && (_global.StrHtmlLazyload = StrHtmlLazyload);
+    }
+    window.StrHtmlLazyload = StrHtmlLazyload;
+    window.strHtmlLazyload = StrHtmlLazyload;
+}());
 
 
 

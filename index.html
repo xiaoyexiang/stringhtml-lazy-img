@@ -9,9 +9,9 @@
         *, *::before, *::after {
             margin: 0;
             padding: 0;
-        }
-        body {
-            padding: 0 16px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
         }
         .article-title {
             position: relative;
@@ -56,15 +56,13 @@
             object-fit: cover;
         } */
     </style>
-    <link rel="stylesheet" href="//img.yojiang.cn/classroom/classroom-iframe.201905211203.css">
+    <link rel="stylesheet" href="https://img.yojiang.cn/classroom/classroom-iframe.201907011038.css">
 </head>
 <body>
     <h1>stringhtml-lazy-img</h1>
     <div id="app" class="article-main-pal"></div>
-<script type="text/javascript" src="/dist/stringhtml-lazyload.js"></script>
+</body>
 <script type="text/javascript">
-    
-
         const WINDOW_HEIGHT = window.innerHeight;
         const ARTICLE_WIDTH = document.getElementsByClassName('article-main-pal')[0].clientWidth;
         var finished = true;
@@ -96,16 +94,13 @@
             var element = document.getElementById('app');
             text = '<div class="article-cover-zone"><img src="http://talcdn.jhkong.com/upload/content/170/article_img_20190521_165546" alt="" width="750" height="420" class="cover-img"></div>' + text;
             new strHtmlLazyload(element, text, {
-                ableLazyLoad: false, // 开启懒加载，替换图片
+                ableLazyLoad: true, // 开启懒加载，替换图片
                 urlResizeType: 'auto', // 图片路径压缩，oss：阿里，qiniu: 七牛， none: 不压缩，auto：根据配置链接自适应,必须填写ossUrlPrefix, qiniuUrlPrefix
                 isYojiangApp: false, // 是否是在有讲APP
-                defaultLazyPic: '//img.yojiang.cn/classroom/default.jpg', // 替换的默认图片链接，也可以使用base64
                 imgBigCheck: true,
                 ossUrlPrefix: 'alcdn.yojiang.cn',
                 qiniuUrlPrefix: 'img.yojiang.cn',
             });
         });
-
 </script>
-</body>
 </html>
