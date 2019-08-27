@@ -1,7 +1,7 @@
 const webpack = require('webpack')
 const merge = require('webpack-merge')
 const path = require('path')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+// const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const productionConfig = require('./webpack.prod.conf.js') // 引入生产环境配置文件
 const developmentConfig = require('./webpack.dev.conf.js') // 引入开发环境配置文件
@@ -27,7 +27,7 @@ const generateConfig = env => {
     output: {
         publicPath: env === 'development' ? '/' : './',
         path: path.resolve(__dirname, '..', 'dist'),
-        filename: 'stringhtml-lazyload.js',
+        filename: env === 'production' ? 'stringhtml-lazyload.min.js' : 'stringhtml-lazyload.js',
     },
     module: {
       rules: [
@@ -35,7 +35,7 @@ const generateConfig = env => {
       ]
     },
     plugins: [
-      new CleanWebpackPlugin()
+      // new CleanWebpackPlugin()
     ]
   }
 }

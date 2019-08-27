@@ -2,7 +2,7 @@
   "name": "stringhtml-lazy-img",
   "version": "0.0.2",
   "description": "string-html img lazyload",
-  "main": "./dist/stringhtml-lazyload.js",
+  "main": "./dist/stringhtml-lazyload.min.js",
   "scripts": {
     "dev": "webpack-dev-server --env development --open --config build/webpack.base.conf.js",
     "build-dev": "webpack --env development --config build/webpack.base.conf.js",
