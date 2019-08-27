@@ -1,6 +1,6 @@
 {
   "name": "stringhtml-lazy-img",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "string-html img lazyload",
   "main": "./dist/stringhtml-lazyload.min.js",
   "scripts": {
