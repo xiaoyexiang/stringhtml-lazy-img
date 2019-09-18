@@ -28,6 +28,7 @@ new strHtmlLazyload(element, text, {
     ossUrlPrefix: 'alcdn.yojiang.cn', // 阿里云 OSS 链接域名
     qiniuUrlPrefix: 'img.yojiang.cn', // 七牛链接域名
     defaultLazyPic: '', // 使用默认图片
+    ableRatio: false, // 是否开启按屏幕像素比获取图片
 });
 ```
 
