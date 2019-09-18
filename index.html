@@ -93,6 +93,8 @@
         getHttp('https://alcdn.yojiang.cn/upload/content/110/article_20190522_111810', function(text) {
             var element = document.getElementById('app');
             text = '<div class="article-cover-zone"><img src="http://talcdn.jhkong.com/upload/content/170/article_img_20190521_165546" alt="" width="750" height="420" class="cover-img"></div>' + text;
+
+            console.log(text);
             new strHtmlLazyload(element, text, {
                 ableLazyLoad: true, // 开启懒加载，替换图片
                 urlResizeType: 'auto', // 图片路径压缩，oss：阿里，qiniu: 七牛， none: 不压缩，auto：根据配置链接自适应,必须填写ossUrlPrefix, qiniuUrlPrefix
@@ -100,6 +102,7 @@
                 imgBigCheck: true,
                 ossUrlPrefix: 'alcdn.yojiang.cn',
                 qiniuUrlPrefix: 'img.yojiang.cn',
+                ableRatio: false, // 是否开启按屏幕像素比获取图片
             });
         });
 </script>

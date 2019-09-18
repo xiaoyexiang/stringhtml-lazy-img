@@ -59,6 +59,7 @@
                 articleWidth: window.innerWidth - 24 * 2,
                 WINDOW_HEIGHT: window.innerHeight,
                 isYojiangApp: false,
+                ableRatio: true,
                 devicePixelRatio: window.devicePixelRatio || 1,
                 imgBigCheck: true,
                 ossUrlPrefix: '',
@@ -114,8 +115,11 @@
                     return match;
                 }
 
-                if (location.protocol == 'https:') {
+                if (window.location.protocol == 'https:') {
                     match = match.replace('http://', 'https://');
+                }
+                if (window.location.protocol == 'http:') {
+                    match = match.replace('https://', 'http://');
                 }
 
                 if (matchWidth && matchHeight) {
@@ -264,15 +268,19 @@
             });
         },
         resizeUrl: function(url, resizeWidth) {
+            let resizeWidthRatio = resizeWidth
+            if (this.defOpts.ableRatio) {
+                resizeWidthRatio = resizeWidth * this.defOpts.devicePixelRatio
+            } 
             if (this.defOpts.urlResizeType === 'oss' ||
                 (this.defOpts.ossUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.ossUrlPrefix) > -1)) {
-                return url + '?x-oss-process=image/resize,w_' + resizeWidth * this.defOpts.devicePixelRatio;
+                return `${url}?x-oss-process=image/resize,w_${resizeWidthRatio}`;
             } else if (this.defOpts.urlResizeType === 'qiniu' ||
                 (this.defOpts.qiniuUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.qiniuUrlPrefix) > -1)) {
-                return url + '?imageView2/2/w/' + resizeWidth * this.defOpts.devicePixelRatio;
+                return `${url}?imageView2/2/w/${resizeWidthRatio}`;
             } else if (this.defOpts.urlResizeType === 'tencent' ||
                 (this.defOpts.tencentUrlPrefix && this.defOpts.urlResizeType === 'auto' && url.indexOf(this.defOpts.tencentUrlPrefix) > -1)) {
-                return url + '?imageView2/2/w/' + resizeWidth * this.defOpts.devicePixelRatio;
+                return `${url}?imageView2/2/w/${resizeWidthRatio}`;
             } else {
                 return url
             }
